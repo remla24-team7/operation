@@ -24,3 +24,7 @@ Approved PR: https://github.com/remla24-team7/app/pull/1
 
 -- Arjun: --
 Created PR: https://github.com/remla24-team7/app/pull/1
+Approved PR: https://github.com/remla24-team7/lib-ml/pull/1
+
+-- Melle: -- 
+Created PR: https://github.com/remla24-team7/lib-ml/pull/1
