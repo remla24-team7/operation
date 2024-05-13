@@ -16,3 +16,5 @@ services:
       - MODEL_SERVICE_URL=http://model-service:5000
     ports:
       - 5000:5000
+    depends_on:
+      - model-service
