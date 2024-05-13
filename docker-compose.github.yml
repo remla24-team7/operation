@@ -1,0 +1,18 @@
+name: phishing-detection-cnn
+
+services:
+  model-service:
+    image: model-service
+    build: https://github.com/remla24-team7/model-service.git#alex
+    volumes:
+      - type: bind
+        source: ./model.h5
+        target: /app/model.h5
+
+  app:
+    image: app-service
+    build: https://github.com/remla24-team7/app.git#alex
+    environment:
+      - MODEL_SERVICE_URL=http://model-service:5000
+    ports:
+      - 5000:5000
