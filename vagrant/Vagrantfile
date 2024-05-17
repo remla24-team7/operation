@@ -1,0 +1,28 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.box_version = "202404.26.0"
+
+  N = 3 
+  IP = "192.168.56"
+  OFFSET = 1
+
+  config.vm.define "controller" do |controller|
+    controller.vm.network "private_network", ip: "#{IP}.#{OFFSET}"
+    controller.vm.hostname = "controller"
+    controller.vm.provider "virtualbox" do |vb|
+      vb.cpus = 1
+      vb.memory = "4096"
+    end
+  end
+
+  (1..2).each do |i|
+    config.vm.define "node#{i}" do |node|
+      node.vm.network "private_network", ip: "#{IP}.#{OFFSET+1}"
+      node.vm.hostname = "node#{i}"
+      node.vm.provider "virtualbox" do |vb|
+        vb.cpus = 2
+        vb.memory = "6144"
+      end
+    end
+  end
+end
