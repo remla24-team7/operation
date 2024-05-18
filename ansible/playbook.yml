@@ -1,0 +1,35 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Update apt repos/cache
+      apt:
+        update_cache: true
+
+- hosts: controller
+  become: true
+  tasks:
+    - name: Install k3s server
+      shell: curl -sfL https://get.k3s.io | sh -
+      environment:
+        INSTALL_K3S_EXEC: "--node-external-ip=192.168.56.110"
+        K3S_KUBECONFIG_MODE: 644
+
+    - name: Share k3s node token
+      copy:
+        remote_src: true
+        src: /var/lib/rancher/k3s/server/node-token
+        dest: /vagrant/k3s-node-token
+
+- hosts: node
+  become: true
+  tasks:
+    - name: Get shared k3s node token
+      slurp:
+        src: /vagrant/k3s-node-token
+      register: k3s_token
+
+    - name: Install k3s agent
+      shell: curl -sfL https://get.k3s.io | sh -
+      environment:
+        K3S_URL: "https://192.168.56.110:6443"
+        K3S_TOKEN: "{{ k3s_token.content | b64decode | regex_replace('\n', '') }}"
