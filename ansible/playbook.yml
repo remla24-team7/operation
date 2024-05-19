@@ -12,7 +12,6 @@
       shell: curl -sfL https://get.k3s.io | sh -
       environment:
         INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }}"
-        K3S_KUBECONFIG_MODE: 644
 
     - name: Install Helm
       shell: |
@@ -22,11 +21,47 @@
         apt-get update
         apt-get install helm
 
-    - name: Install Prometheus
+    - name: Get Helm repositories
+      command: helm repo list
+      register: helm_repos
+      ignore_errors: true
+
+    - name: Set Helm repository facts
+      set_fact:
+        prometheus_repo_add: "{{ 'prometheus-community' not in helm_repos.stdout }}"
+        grafana_repo_add: "{{ 'grafana' not in helm_repos.stdout }}"
+        kubernetes_dashboard_repo_add: "{{ 'kubernetes-dashboard' not in helm_repos.stdout }}"
+
+    - name: Add Prometheus repository
+      command: helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+      when: prometheus_repo_add
+
+    - name: Install or upgrade Prometheus
       shell: |
-        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
         helm repo update
-        helm install prometheus prometheus-community/kube-prometheus-stack --create-namespace --namespace monitoring
+        helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --create-namespace --namespace monitoring
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Add Grafana repository
+      command: helm repo add grafana https://grafana.github.io/helm-charts
+      when: grafana_repo_add
+
+    - name: Install or upgrade Grafana
+      shell: |
+        helm repo update
+        helm upgrade --install grafana grafana/grafana --namespace monitoring
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Add Kubernetes Dashboard repository
+      command: helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard
+      when: kubernetes_dashboard_repo_add
+
+    - name: Install or upgrade Kubernetes Dashboard
+      shell: |
+        helm repo update
+        helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --namespace monitoring
       environment:
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
@@ -36,7 +71,7 @@
         src: /etc/rancher/k3s/k3s.yaml
         dest: /vagrant/k3s.yaml
 
-    - name: Update server endpoint to private_network in kubeconfig
+    - name: Replace localhost with external_ip in shared kubeconfig
       replace:
         path: /vagrant/k3s.yaml
         regexp: "127.0.0.1"
