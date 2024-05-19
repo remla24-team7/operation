@@ -33,7 +33,8 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 8000
+    - port: 443
+      targetPort: 8443
       nodePort: 30030
   selector:
-    app.kubernetes.io/name: kubernetes-dashboard-web
+    app.kubernetes.io/instance: kubernetes-dashboard
