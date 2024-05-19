@@ -2,7 +2,9 @@ Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202404.26.0"
 
-  # config.vm.synced_folder "/mnt/c/remla/vagrant-shared", "/vagrant"
+  if ENV["VAGRANT_SYNCED_FOLDER"]
+    config.vm.synced_folder ENV["VAGRANT_SYNCED_FOLDER"], "/vagrant"
+  end
 
   NETWORK_PREFIX = "192.168.56"
   OFFSET = 110
@@ -11,7 +13,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "controller" do |controller|
     HOSTNAME = "controller"
     controller.vm.network "private_network", ip: CONTROLLER_IP
-    # controller.vm.network :forwarded_port, guest: 22, host: 2200, host_ip: "0.0.0.0", id: "ssh"
+    controller.vm.network :forwarded_port, guest: 22, host: 2200, host_ip: "0.0.0.0", id: "ssh"
     controller.vm.hostname = HOSTNAME
     controller.vm.provider "virtualbox" do |vb|
       vb.cpus = 1
@@ -36,7 +38,7 @@ Vagrant.configure("2") do |config|
       HOSTNAME = "node#{id}"
       NODE_IP = "#{NETWORK_PREFIX}.#{OFFSET + id}"
       node.vm.network "private_network", ip: NODE_IP
-      # node.vm.network :forwarded_port, guest: 22, host: 2200 + id, host_ip: "0.0.0.0", id: "ssh"
+      node.vm.network :forwarded_port, guest: 22, host: 2200 + id, host_ip: "0.0.0.0", id: "ssh"
       node.vm.hostname = HOSTNAME
       node.vm.provider "virtualbox" do |vb|
         vb.cpus = 2
