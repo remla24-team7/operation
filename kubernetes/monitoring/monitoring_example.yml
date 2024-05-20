@@ -1,40 +1,79 @@
 # monitoring.yml
-apiVersion: v1
-kind: Pod
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: showmetrics
+#   namespace: default
+#   labels:
+#     app: showmetrics
+# spec:
+#   containers:
+#   - name: showmetrics
+#     image: proksch/showmetrics:latest
+#     ports:
+#     - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: showmetrics
+  name: showmetrics-deployment
   labels:
     app: showmetrics
 spec:
-  containers:
-  - name: showmetrics
-    image: proksch/showmetrics:latest
-    ports:
-    - containerPort: 8080
+  replicas: 1
+  selector:
+    matchLabels:
+      app: showmetrics
+  template:
+    metadata:
+      labels:
+        app: showmetrics
+    spec:
+      containers:
+      - name: showmetrics
+        image: proksch/showmetrics
+        ports:
+        - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: my-service
+  namespace: default
   labels:
     app: showmetrics-serv
 spec:
   type: NodePort
   selector:
+    # app.kubernetes.io/name: myapp
+    # app: showmetrics
+    # name: showenv # used to be myapp
     app: showmetrics
   ports:
     - name: web
       port: 1234
       targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  defaultBackend:
+    service:
+      name: my-service
+      port:
+        number: 1234
 ...
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: mymonitor
+  namespace: default
   labels:
     release: prometheus
-spec:
+spec: 
   selector:
     matchLabels:
       app: showmetrics-serv
