@@ -31,7 +31,9 @@ The `kubeconfig` should be available on the host at `${VAGRANT_SYNCED_FOLDER:-.}
 This should deploy three pods distributed on the controller, node1 and node2. Open the Prometheus dashboard and move on to Status >> Targets to find the metrics endpoint. 
 
 To add the dashboard, navigate to the Grafana dashboard at http://192.168.56.110:30020. 
+
 login: admin
+
 password: prom-operator
 
 And add the JSON dashboard located in `kubernetes/monitoring/remla24-team7-dashboard.json`
