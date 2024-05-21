@@ -1,0 +1,99 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Update apt repos/cache
+      apt:
+        update_cache: true
+
+- hosts: controller
+  become: true
+  tasks:
+    - name: Install k3s server
+      shell: curl -sfL https://get.k3s.io | sh -
+      environment:
+        INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }}"
+
+    - name: Install Helm
+      shell: |
+        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+        apt-get install apt-transport-https --yes
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+        apt-get update
+        apt-get install helm
+
+    - name: Get Helm repositories
+      command: helm repo list
+      register: helm_repos
+      ignore_errors: true
+
+    - name: Set Helm repository facts
+      set_fact:
+        prometheus_repo_add: "{{ 'prometheus-community' not in helm_repos.stdout }}"
+        grafana_repo_add: "{{ 'grafana' not in helm_repos.stdout }}"
+        kubernetes_dashboard_repo_add: "{{ 'kubernetes-dashboard' not in helm_repos.stdout }}"
+
+    - name: Add Prometheus repository
+      command: helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+      when: prometheus_repo_add
+
+    - name: Install or upgrade Prometheus
+      shell: |
+        helm repo update
+        helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --create-namespace --namespace monitoring
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Add Grafana repository
+      command: helm repo add grafana https://grafana.github.io/helm-charts
+      when: grafana_repo_add
+
+    - name: Install or upgrade Grafana
+      shell: |
+        helm repo update
+        helm upgrade --install grafana grafana/grafana --namespace monitoring
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Add Kubernetes Dashboard repository
+      command: helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard
+      when: kubernetes_dashboard_repo_add
+
+    - name: Install or upgrade Kubernetes Dashboard
+      shell: |
+        helm repo update
+        helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --namespace monitoring
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Share kubeconfig (k3s.yaml)
+      copy:
+        remote_src: true
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: /vagrant/k3s.yaml
+
+    - name: Replace localhost with external_ip in shared kubeconfig
+      replace:
+        path: /vagrant/k3s.yaml
+        regexp: "127.0.0.1"
+        replace: "{{ node_ip }}"
+
+    - name: Share k3s node token
+      copy:
+        remote_src: true
+        src: /var/lib/rancher/k3s/server/node-token
+        dest: /vagrant/k3s-node-token
+
+- hosts: node
+  become: true
+  tasks:
+    - name: Get shared k3s node token
+      slurp:
+        src: /vagrant/k3s-node-token
+      register: k3s_token
+
+    - name: Install k3s agent
+      shell: curl -sfL https://get.k3s.io | sh -
+      environment:
+        INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }}"
+        K3S_URL: "https://{{ controller_ip }}:6443"
+        K3S_TOKEN: "{{ k3s_token.content | b64decode | trim }}"
