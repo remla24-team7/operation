@@ -3,15 +3,21 @@ name: phishing-detection-cnn
 services:
   model-service:
     image: model-service
-    build: https://github.com/remla24-team7/model-service.git#alex
+    build: ../model-service
     volumes:
       - type: bind
         source: ./model.h5
         target: /app/model.h5
+      - type: bind
+        source: ./tokenizer.joblib
+        target: /app/tokenizer.joblib
+      - type: bind
+        source: ./encoder.joblib
+        target: /app/encoder.joblib
 
   app:
     image: app-service
-    build: https://github.com/remla24-team7/app.git#alex
+    build: ../app
     environment:
       - MODEL_SERVICE_URL=http://model-service:5000
     ports:

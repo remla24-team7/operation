@@ -3,3 +3,11 @@ outs:
   size: 5483016
   hash: md5
   path: model.h5
+- md5: 34d8f6372601c5b602892201c3bf76f0
+  size: 2394
+  hash: md5
+  path: tokenizer.joblib
+- md5: a90d923066be084ecfa4af46e31f5800
+  size: 407
+  hash: md5
+  path: encoder.joblib
