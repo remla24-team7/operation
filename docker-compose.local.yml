@@ -1,0 +1,26 @@
+name: phishing-detection-cnn
+
+services:
+  model-service:
+    image: model-service
+    build: ../model-service
+    volumes:
+      - type: bind
+        source: ./model.h5
+        target: /app/model.h5
+      - type: bind
+        source: ./tokenizer.joblib
+        target: /app/tokenizer.joblib
+      - type: bind
+        source: ./encoder.joblib
+        target: /app/encoder.joblib
+
+  app:
+    image: app-service
+    build: ../app
+    environment:
+      - MODEL_SERVICE_URL=http://model-service:5000
+    ports:
+      - 5000:5000
+    depends_on:
+      - model-service

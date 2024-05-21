@@ -1,0 +1,24 @@
+name: phishing-detection-cnn
+
+services:
+  model-service:
+    image: avilakathara/remla24-group7-model-service # TODO
+    volumes:
+      - type: bind
+        source: ./model.h5
+        target: /app/model.h5
+      - type: bind
+        source: ./tokenizer.joblib
+        target: /app/tokenizer.joblib
+      - type: bind
+        source: ./encoder.joblib
+        target: /app/encoder.joblib
+
+  app:
+    image: avilakathara/remla24-group7-app
+    environment:
+      - MODEL_SERVICE_URL=http://model-service:5000
+    ports:
+      - 5000:5000
+    depends_on:
+      - model-service
