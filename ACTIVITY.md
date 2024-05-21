@@ -39,7 +39,7 @@ Approved PR: https://github.com/remla24-team7/lib-version/pull/1
 Created PR: No PR, however WIP branches: https://github.com/remla24-team7/model-service/tree/alex and https://github.com/remla24-team7/lib-ml/tree/alex
 Approved PR: https://github.com/remla24-team7/model-service/pull/1
 
-# A3
+# A3:
 
 -- Kevin: --
 Created: https://github.com/remla24-team7/operation/pull/6
