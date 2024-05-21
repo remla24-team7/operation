@@ -23,3 +23,7 @@ The `kubeconfig` should be available on the host at `${VAGRANT_SYNCED_FOLDER:-.}
 `kubectl apply -f kubernetes/monitoring/cluster-admin.yml`
 
 `kubectl -n monitoring create token admin`
+
+### Start monitoring the application
+
+`kubectl apply -f kubernetes/monitoring/monitoring_example.yml`
