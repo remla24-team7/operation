@@ -57,3 +57,13 @@ Approved PR: https://github.com/remla24-team7/operation/pull/6
 Created PR: https://github.com/remla24-team7/operation/pull/7 https://github.com/remla24-team7/operation/pull/8
 Approved PR: https://github.com/remla24-team7/operation/pull/9
 
+
+# A4: 
+
+-- Arjun: --
+Created PR: https://github.com/remla24-team7/model-training/pull/10
+Approved PR: https://github.com/remla24-team7/model-training/pull/9
+
+-- Alex: --
+Created PR: https://github.com/remla24-team7/model-training/pull/9
+Approved PR: 
