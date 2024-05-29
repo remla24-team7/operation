@@ -67,3 +67,7 @@ Approved PR: https://github.com/remla24-team7/model-training/pull/9
 -- Alex: --
 Created PR: https://github.com/remla24-team7/model-training/pull/9
 Approved PR: 
+
+--Melle: --
+Created PR: https://github.com/remla24-team7/model-training/pull/8
+Approved PR: https://github.com/remla24-team7/model-training/pull/10
