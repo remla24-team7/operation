@@ -2,7 +2,7 @@ name: phishing-detection-cnn
 
 services:
   model-service:
-    image: avilakathara/remla24-group7-model-service # TODO
+    image: ghcr.io/remla24-team7/model-service:0.1.0
     volumes:
       - type: bind
         source: ./model.h5
@@ -15,7 +15,7 @@ services:
         target: /app/encoder.joblib
 
   app:
-    image: avilakathara/remla24-group7-app
+    image: avilakathara/remla24-group7-app:0.0.2
     environment:
       - MODEL_SERVICE_URL=http://model-service:5000
     ports:
