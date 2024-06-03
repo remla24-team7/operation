@@ -26,6 +26,8 @@ The `kubeconfig` should be available on the host at `${VAGRANT_SYNCED_FOLDER:-.}
 
 ### Deploy the `app` and `model-service`
 
+Make an entry in `/etc/hosts`: `192.168.56.110 app.remla.local`
+
 Make sure the model files (`model.h5`, `tokenizer.joblib`, `encoder.joblib`) are in `${VAGRANT_SYNCED_FOLDER:-.}`.
 
 `kubectl apply -f kubernetes/app.yml`
