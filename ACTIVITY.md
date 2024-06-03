@@ -77,3 +77,15 @@ Approved PR: https://github.com/remla24-team7/model-training/pull/10
 -- Melle: --
 Created PR: No PR created, however spent time trying to fix kubernetes deployment and traffic management, no success yet.
 Approved PR: https://github.com/remla24-team7/model-service/pull/4
+
+-- Kevin --
+Created PR: No PR created, worked on implementing monitoring however experiencing issue that k3s agent can't communicate over ClusterIPs which hampers monitoring.
+Approved PR: https://github.com/remla24-team7/operation/pull/10
+
+-- Arjun --
+Created PR: https://github.com/remla24-team7/model-service/pull/4
+Approved PR: 
+
+-- Alex --
+Created PR: https://github.com/remla24-team7/operation/pull/10
+Approved PR: 
