@@ -46,6 +46,8 @@ Type "help", "copyright", "credits" or "license" for more information.
 Illegal instruction (core dumped)
 ```
 
+https://stackoverflow.com/questions/49094597/illegal-instruction-core-dumped-after-running-import-tensorflow
+
 ### Start monitoring the application
 
 `kubectl apply -f kubernetes/monitoring/monitoring_example.yml`
