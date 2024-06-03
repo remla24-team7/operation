@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-service
+  labels:
+    app: model-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: model-service
+  template:
+    metadata:
+      labels:
+        app: model-service
+    spec:
+      containers:
+        - name: model-service
+          image: ghcr.io/remla24-team7/model-service:0.1.0
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: vagrant-synced-folder
+              subPath: model.h5
+              mountPath: /app/model.h5
+            - name: vagrant-synced-folder
+              subPath: tokenizer.joblib
+              mountPath: /app/tokenizer.joblib
+            - name: vagrant-synced-folder
+              subPath: encoder.joblib
+              mountPath: /app/encoder.joblib
+      volumes:
+        - name: vagrant-synced-folder
+          hostPath:
+            path: /vagrant
+            type: Directory
+      nodeSelector:
+        # TODO: something wrong with traefik and node communication, has to be on controller for now
+        # kubernetes.io/hostname: node2
+        kubernetes.io/hostname: controller
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-service
+spec:
+  selector:
+    app: model-service
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
