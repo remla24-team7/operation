@@ -11,7 +11,7 @@
     - name: Install k3s server
       shell: curl -sfL https://get.k3s.io | sh -
       environment:
-        INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }}"
+        INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }} --flannel-iface=eth1"
 
     - name: Install Helm
       shell: |
@@ -94,6 +94,6 @@
     - name: Install k3s agent
       shell: curl -sfL https://get.k3s.io | sh -
       environment:
-        INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }}"
+        INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }} --flannel-iface=eth1"
         K3S_URL: "https://{{ controller_ip }}:6443"
         K3S_TOKEN: "{{ k3s_token.content | b64decode | trim }}"
