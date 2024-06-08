@@ -1,13 +1,10 @@
 outs:
-- md5: b30a9385e6f1bf647b32d3ebc496c36f
-  size: 5483016
-  hash: md5
-  path: model.h5
-- md5: 34d8f6372601c5b602892201c3bf76f0
-  size: 2394
-  hash: md5
-  path: tokenizer.joblib
-- md5: a90d923066be084ecfa4af46e31f5800
-  size: 407
-  hash: md5
-  path: encoder.joblib
+- hash: md5
+  path: model
+  files:
+  - relpath: model.keras
+    md5: 5ba537477f25baa5702ea6b1309dabe9
+  - relpath: tokenizer.joblib
+    md5: 715790d15dcc90c7b9e6cd1bec8fe6d0
+  - relpath: encoder.joblib
+    md5: a4296df89603e38bd874c32383bc5d02

@@ -1,4 +1,4 @@
 .vagrant
 k3s-node-token
 k3s.yaml
-model.h5
+/model
