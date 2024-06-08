@@ -1,6 +1,18 @@
 # operation
 
-## A3: Kubernetes
+Before you get started make sure to `dvc pull` the [model.dvc](model.dvc).
+
+## A2: Docker Compose
+
+We provide three Compose configurations:
+
+`docker compose up` to use our image releases.
+
+`docker compose -f docker-compose.git.yml up --build` to build from Dockerfiles on the remote `main` branches.
+
+`docker compose -f docker-compose.local.yml up --build` to build from Dockerfiles in locally cloned repositories.
+
+## A3: Vagrant/Kubernetes
 
 ### Provision the VMs
 
@@ -28,27 +40,13 @@ The `kubeconfig` should be available on the host at `${VAGRANT_SYNCED_FOLDER:-.}
 
 Make an entry in `/etc/hosts`: `192.168.56.110 app.remla.local`
 
-Make sure the model files (`model.h5`, `tokenizer.joblib`, `encoder.joblib`) are in `${VAGRANT_SYNCED_FOLDER:-.}`.
+Make sure the model folder (`model/model.keras`, `model/tokenizer.joblib`, `model/encoder.joblib`) is in `${VAGRANT_SYNCED_FOLDER:-.}`.
 
 `kubectl apply -f kubernetes/app.yml`
 
 `kubectl apply -f kubernetes/model-service.yml`
 
-### ...watch `model-service` keep crashing
-
-```
-➜ kubectl run test --image=ghcr.io/remla24-team7/model-service:0.1.0 --stdin --tty /bin/bash
-If you don't see a command prompt, try pressing enter.
-root@test:/app# ls
-model_service  poetry.lock  pyproject.toml
-root@test:/app# poetry run python
-Python 3.11.0rc1 (main, Aug 12 2022, 10:02:14) [GCC 11.2.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> import tensorflow
-Illegal instruction (core dumped)
-```
-
-https://stackoverflow.com/questions/49094597/illegal-instruction-core-dumped-after-running-import-tensorflow
+> Note: [unless AVX instructions are available inside the VMs, tensorflow and therefore model-service will crash](https://stackoverflow.com/questions/65780506/how-to-enable-avx-avx2-in-virtualbox-6-1-16-with-ubuntu-20-04-64bit).
 
 ### Start monitoring the application
 
