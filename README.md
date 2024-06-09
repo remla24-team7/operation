@@ -50,14 +50,22 @@ Make sure the model folder (`model/model.keras`, `model/tokenizer.joblib`, `mode
 
 ### Start monitoring the application
 
-`kubectl apply -f kubernetes/monitoring/monitoring_example.yml`
+    kubectl apply -f kubernetes/monitoring/monitoring_example.yml
 
 This should deploy three pods distributed on the controller, node1 and node2. Open the Prometheus dashboard and move on to Status >> Targets to find the metrics endpoint. 
 
 To add the dashboard, navigate to the Grafana dashboard at http://192.168.56.110:30020. 
 
+To obtain the password for the Grafana dashboard run the following command:
+
+    kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+The login credentials are:
+
 login: admin
 
-password: prom-operator
+password: *generated from command above*
+
+Now add Prometheus as a data source (Configuration > Data sources), the URL for Prometheus is http://192.168.56.110:30010
 
 And add the JSON dashboard located in `kubernetes/monitoring/remla24-team7-dashboard.json`
