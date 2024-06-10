@@ -91,10 +91,10 @@ Created PR: https://github.com/remla24-team7/operation/pull/10
 Approved PR: 
 
 
-#A6:
+# A6:
 --Melle: --
 Created PR: https://github.com/remla24-team7/operation/pull/11
-Merged PR: 
+Merged PR: https://github.com/remla24-team7/model-training/pull/11
 
 -- Kevin --
 Created PR: 
