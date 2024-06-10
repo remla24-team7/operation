@@ -69,3 +69,23 @@ password: *generated from command above*
 Now add Prometheus as a data source (Configuration > Data sources), the URL for Prometheus is http://192.168.56.110:30010
 
 And add the JSON dashboard located in `kubernetes/monitoring/remla24-team7-dashboard.json`
+
+## A5: Istio Service Mesh
+### Running instructions
+
+```
+minikube start
+istioctl install
+kubectl apply -f {istio install}/samples/addons/prometheus.yaml
+kubectl apply -f {istio install}/samples/addons/jaeger.yaml
+kubectl apply -f {istio install}/samples/addons/kiali.yaml
+kubectl apply -f kubernetes/launch.yml
+
+minikube tunnel
+```
+
+To then open the kiali dashboard
+
+```
+istioctl dashboard kiali
+```
