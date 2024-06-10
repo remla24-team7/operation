@@ -89,3 +89,21 @@ Approved PR:
 -- Alex --
 Created PR: https://github.com/remla24-team7/operation/pull/10
 Approved PR: 
+
+
+#A6:
+--Melle: --
+Created PR: https://github.com/remla24-team7/operation/pull/11
+Merged PR: 
+
+-- Kevin --
+Created PR: 
+Approved PR: 
+
+-- Arjun --
+Created PR: 
+Approved PR: 
+
+-- Alex --
+Created PR: 
+Approved PR: 
