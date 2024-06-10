@@ -97,11 +97,11 @@ Created PR: https://github.com/remla24-team7/operation/pull/11
 Merged PR: https://github.com/remla24-team7/model-training/pull/11
 
 -- Kevin --
-Created PR: 
+Created PR: https://github.com/remla24-team7/operation/pull/12
 Approved PR: 
 
 -- Arjun --
-Created PR: 
+Created PR: https://github.com/remla24-team7/app/pull/3
 Approved PR: 
 
 -- Alex --
