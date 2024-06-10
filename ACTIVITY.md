@@ -105,5 +105,5 @@ Created PR:
 Approved PR: 
 
 -- Alex --
-Created PR: https://github.com/remla24-team7/model-training#11
+Created PR: https://github.com/remla24-team7/model-training/pull/11
 Approved PR: 
