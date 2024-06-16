@@ -79,6 +79,7 @@ Kiali has already been provisioned through the Ansible playbook, to apply Promet
 
     kubectl apply -f {istio install}/samples/addons/prometheus.yaml
     kubectl apply -f {istio install}/samples/addons/jaeger.yaml
+    kubectl apply -f kubernetes/launch.yml
 
 To open the Kiali dashboard navigate to: https://192.168.56.110:30040
 
