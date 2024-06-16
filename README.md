@@ -29,6 +29,7 @@ The `kubeconfig` should be available on the host at `${VAGRANT_SYNCED_FOLDER:-.}
 - Prometheus should be reachable at http://192.168.56.110:30010
 - Grafana should be reachable at http://192.168.56.110:30020
 - Kubernetes Dashboard should be reachable at https://192.168.56.110:30030
+- Kiali Dashboard should be reachable at https://192.168.56.110:30040
 
 ### Create the ClusterAdmin user and generate a Bearer token to access Kubernetes Dashboard
 
@@ -71,8 +72,18 @@ Now add Prometheus as a data source (Configuration > Data sources), the URL for 
 And add the JSON dashboard located in `kubernetes/monitoring/remla24-team7-dashboard.json`
 
 ## A5: Istio Service Mesh
-### Running instructions
+The Istio service mesh can be applied through the K3S cluster, or through Minikube. Instructions are provided for both methods.
+### 1. Running instructions for K3S
 
+Kiali has already been provisioned through the Ansible playbook, to apply Prometheus and Jaeger for Kiali: please navigate to your local Istio installation and run the following commands:
+
+    kubectl apply -f {istio install}/samples/addons/prometheus.yaml
+    kubectl apply -f {istio install}/samples/addons/jaeger.yaml
+
+To open the Kiali dashboard navigate to: https://192.168.56.110:30040
+
+
+### 2. Running instructions for Minikube
 ```
 minikube start
 istioctl install

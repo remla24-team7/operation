@@ -161,3 +161,17 @@ spec:
   - name: v1
     labels:
       version: v1
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: app
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`app.remla.local`)
+      kind: Rule
+      services:
+        - name: app
+          port: 5000
