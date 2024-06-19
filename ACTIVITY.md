@@ -102,7 +102,7 @@ Approved PR:
 
 -- Arjun --
 Created PR: https://github.com/remla24-team7/app/pull/3
-Approved PR: 
+Approved PR: https://github.com/remla24-team7/operation/pull/11
 
 -- Alex --
 Created PR: https://github.com/remla24-team7/model-training/pull/11
