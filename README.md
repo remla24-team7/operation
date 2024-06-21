@@ -77,12 +77,18 @@ The Istio service mesh can be applied through the K3S cluster, or through Miniku
 
 Kiali has already been provisioned through the Ansible playbook, to apply Prometheus and Jaeger for Kiali: please navigate to your local Istio installation and run the following commands:
 
+    kubectl label ns default istio-injection=enabled
     kubectl apply -f {istio install}/samples/addons/prometheus.yaml
     kubectl apply -f {istio install}/samples/addons/jaeger.yaml
     kubectl apply -f kubernetes/launch.yml
 
+You might need to restart `vagrant up` if your VMs lose connection. In that case, delete and reapply `kubernetes/monitoring/expose-dashboards.yml` and `kubernetes/launch.yml`
+
 To open the Kiali dashboard navigate to: https://192.168.56.110:30040
 
+Wait until the `app` pod in the default namespace is up and healthy and the navigate to 'Traffic Graph' in the Kiali Dashboard. In a separate tab, open http://app.remla.local (assuming you added this to your `/etc/hosts`). Now refresh the page a couple of times and go back to the Kiali Dashboard. You should see some https traffic coming into the `app` pod via the `istio-ingressgateway` which should look something like this:
+
+![istio_traffic](./images/Istio_traffic.png)
 
 ### 2. Running instructions for Minikube
 ```

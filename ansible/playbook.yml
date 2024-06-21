@@ -31,42 +31,33 @@
         prometheus_repo_add: "{{ 'prometheus-community' not in helm_repos.stdout }}"
         grafana_repo_add: "{{ 'grafana' not in helm_repos.stdout }}"
         kubernetes_dashboard_repo_add: "{{ 'kubernetes-dashboard' not in helm_repos.stdout }}"
-        istio_repo_add: "{{ 'istio' not in helm_repos.stdout }}"
+        kiali_repo_add: "{{ 'kiali' not in helm_repos.stdout }}"
 
-    - name: Add Istio repository
-      command: helm repo add istio https://istio-release.storage.googleapis.com/charts
-      when: istio_repo_add
 
-    - name: Install or upgrade Istio-base
+    - name: Install istioctl
       shell: |
-        helm repo update
-        helm upgrade --install istio-base istio/base --create-namespace --namespace istio-system --set defaultRevision=default
+        curl -L https://istio.io/downloadIstio | sh -
+        cd $(find . -name 'istio-*' -type d)
+        export PATH=$PWD/bin:$PATH
+        istioctl install -y
       environment:
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+        
+    - name: Add Kiali repository
+      command: helm repo add kiali https://kiali.org/helm-charts
+      when: kiali_repo_add
 
-    - name: Install or upgrade Istiod
-      shell: |
-        helm repo update
-        helm upgrade --install istiod istio/istiod --namespace istio-system 
-      environment: 
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-
-    - name: Install Kiali Server using Helm
+    - name: Install Kiali Server using the Kiali operator via Helm
       shell: |
         helm repo update
         helm upgrade --install \
-        --namespace istio-system \
-        --set auth.strategy="anonymous" \
-        --repo https://kiali.org/helm-charts \
-        kiali-server \
-        kiali-server
-      environment: 
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-
-    - name: Install Istio Ingress Gateway
-      shell: |
-        helm repo update
-        helm upgrade --install istio-ingress istio/gateway --create-namespace --namespace istio-ingress --wait
+        --set cr.create=true \
+        --set cr.namespace=istio-system \
+        --set cr.spec.auth.strategy="anonymous" \
+        --namespace kiali-operator \
+        --create-namespace \
+        kiali-operator \
+        kiali/kiali-operator
       environment: 
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
