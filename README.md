@@ -107,3 +107,13 @@ To then open the kiali dashboard
 ```
 istioctl dashboard kiali
 ```
+
+## Rate limiting in Istio
+
+Istio provides a neat way to enable rate limiting using Envoy and its EnvoyFilter resource. We have defined a local rate limit that limits http traffic to the `app`. The local rate limit's filter [token bucket](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/local_ratelimit/v3/local_rate_limit.proto#envoy-v3-api-field-extensions-filters-http-local-ratelimit-v3-localratelimit-token-bucket) is set to 20 requests, and is refilled with 10 requests every 30 seconds. To apply the local rate limiter:
+
+    kubectl apply -f kubernetes/ratelimit.yml
+
+To verify this, open http://app.remla.local and refresh the page 21 times. After the 21st time you should be blocked from accessing the app and see the message: **local_rate_limited**
+
+![istio_rate_limited](./images/Istio_rate_limited.png)
