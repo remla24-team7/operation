@@ -1,0 +1,177 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  labels:
+    app: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/remla24-team7/app:0.1.0
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MODEL_SERVICE_URL
+              value: "http://model-service:5000"
+      nodeSelector:
+        kubernetes.io/hostname: node1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  labels:
+    app: app-svc
+spec:
+  selector:
+    app: app
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-service
+  labels:
+    app: model-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: model-service
+  template:
+    metadata:
+      labels:
+        app: model-service
+    spec:
+      containers:
+        - name: model-service
+          image: ghcr.io/remla24-team7/model-service:0.1.1
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: vagrant-synced-folder
+              subPath: model
+              mountPath: /app/model
+      volumes:
+        - name: vagrant-synced-folder
+          hostPath:
+            path: /vagrant
+            type: Directory
+      nodeSelector:
+        kubernetes.io/hostname: node2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-service
+spec:
+  selector:
+    app: model-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: app-gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway # use Istio's default ingress gateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "app.remla.local"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: app
+spec:
+  hosts:
+  - "app.remla.local"
+  gateways:
+  - app-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: app
+        port:
+          number: 5000
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: app
+spec:
+  host: app
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: model-service
+spec:
+  hosts:
+  - "model-service"
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: model-service
+        port:
+          number: 5000
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: model-service
+spec:
+  host: model-service
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: app
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`app.remla.local`)
+      kind: Rule
+      services:
+        - name: app
+          port: 5000

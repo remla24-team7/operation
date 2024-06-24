@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  labels:
+    app: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/remla24-team7/app:0.1.0
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MODEL_SERVICE_URL
+              value: "http://model-service:5000"
+      nodeSelector:
+        kubernetes.io/hostname: node1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  labels:
+    app: app-svc
+spec:
+  selector:
+    app: app
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: app
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`app.remla.local`)
+      kind: Rule
+      services:
+        - name: app
+          port: 5000

@@ -11,7 +11,7 @@
     - name: Install k3s server
       shell: curl -sfL https://get.k3s.io | sh -
       environment:
-        INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }}"
+        INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }} --flannel-iface=eth1"
 
     - name: Install Helm
       shell: |
@@ -31,6 +31,35 @@
         prometheus_repo_add: "{{ 'prometheus-community' not in helm_repos.stdout }}"
         grafana_repo_add: "{{ 'grafana' not in helm_repos.stdout }}"
         kubernetes_dashboard_repo_add: "{{ 'kubernetes-dashboard' not in helm_repos.stdout }}"
+        kiali_repo_add: "{{ 'kiali' not in helm_repos.stdout }}"
+
+
+    - name: Install istioctl
+      shell: |
+        curl -L https://istio.io/downloadIstio | sh -
+        cd $(find . -name 'istio-*' -type d)
+        export PATH=$PWD/bin:$PATH
+        istioctl install -y
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+        
+    - name: Add Kiali repository
+      command: helm repo add kiali https://kiali.org/helm-charts
+      when: kiali_repo_add
+
+    - name: Install Kiali Server using the Kiali operator via Helm
+      shell: |
+        helm repo update
+        helm upgrade --install \
+        --set cr.create=true \
+        --set cr.namespace=istio-system \
+        --set cr.spec.auth.strategy="anonymous" \
+        --namespace kiali-operator \
+        --create-namespace \
+        kiali-operator \
+        kiali/kiali-operator
+      environment: 
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
     - name: Add Prometheus repository
       command: helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -94,6 +123,6 @@
     - name: Install k3s agent
       shell: curl -sfL https://get.k3s.io | sh -
       environment:
-        INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }}"
+        INSTALL_K3S_EXEC: "--node-ip={{ node_ip }} --node-external-ip={{ node_ip }} --flannel-iface=eth1"
         K3S_URL: "https://{{ controller_ip }}:6443"
         K3S_TOKEN: "{{ k3s_token.content | b64decode | trim }}"

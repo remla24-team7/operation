@@ -5,15 +5,7 @@ services:
     image: model-service
     build: https://github.com/remla24-team7/model-service.git
     volumes:
-      - type: bind
-        source: ./model.h5
-        target: /app/model.h5
-      - type: bind
-        source: ./tokenizer.joblib
-        target: /app/tokenizer.joblib
-      - type: bind
-        source: ./encoder.joblib
-        target: /app/encoder.joblib
+      - ./model:/app/model
 
   app:
     image: app-service
