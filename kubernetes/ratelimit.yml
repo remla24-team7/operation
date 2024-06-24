@@ -27,7 +27,7 @@ spec:
               stat_prefix: http_local_rate_limiter
               enable_x_ratelimit_headers: DRAFT_VERSION_03
               token_bucket:
-                max_tokens: 20
+                max_tokens: 50
                 tokens_per_fill: 10
                 fill_interval: 30s
               filter_enabled:

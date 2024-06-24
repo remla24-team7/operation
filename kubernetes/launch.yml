@@ -1,22 +1,55 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: app-v1
   labels:
     app: app
+    version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: app
+      version: v1
   template:
     metadata:
       labels:
         app: app
+        version: v1
     spec:
       containers:
         - name: app
           image: ghcr.io/remla24-team7/app:0.1.0
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MODEL_SERVICE_URL
+              value: "http://model-service:5000"
+      nodeSelector:
+        kubernetes.io/hostname: node1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-v2
+  labels:
+    app: app
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: app
+        version: v2
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/remla24-team7/app:0.1.4
           ports:
             - containerPort: 5000
           env:
@@ -44,22 +77,61 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: model-service
+  name: model-service-v1
   labels:
     app: model-service
+    version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: model-service
+      version: v1
   template:
     metadata:
       labels:
         app: model-service
+        version: v1
     spec:
       containers:
         - name: model-service
           image: ghcr.io/remla24-team7/model-service:0.1.1
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: vagrant-synced-folder
+              subPath: model
+              mountPath: /app/model
+      volumes:
+        - name: vagrant-synced-folder
+          hostPath:
+            path: /vagrant
+            type: Directory
+      nodeSelector:
+        kubernetes.io/hostname: node2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-service-v2
+  labels:
+    app: model-service
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: model-service
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: model-service
+        version: v2
+    spec:
+      containers:
+        - name: model-service
+          image: ghcr.io/remla24-team7/model-service:0.1.2
           ports:
             - containerPort: 5000
           volumeMounts:
@@ -97,12 +169,12 @@ spec:
   selector:
     istio: ingressgateway # use Istio's default ingress gateway
   servers:
-  - port:
-      number: 80
-      name: http
-      protocol: HTTP
-    hosts:
-    - "app.remla.local"
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "app.remla.local"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -110,29 +182,40 @@ metadata:
   name: app
 spec:
   hosts:
-  - "app.remla.local"
+    - "app.remla.local"
   gateways:
-  - app-gateway
+    - app-gateway
   http:
-  - match:
-    - uri:
-        prefix: /
-    route:
-    - destination:
-        host: app
-        port:
-          number: 5000
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: app
+            subset: v1
+            port:
+              number: 5000
+          weight: 90
+        - destination:
+            host: app
+            subset: v2
+            port:
+              number: 5000
+          weight: 10
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: app
+  name: app-dr
 spec:
   host: app
   subsets:
-  - name: v1
-    labels:
-      version: v1
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -140,27 +223,38 @@ metadata:
   name: model-service
 spec:
   hosts:
-  - "model-service"
+    - "model-service"
   http:
-  - match:
-    - uri:
-        prefix: /
-    route:
-    - destination:
-        host: model-service
-        port:
-          number: 5000
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: model-service
+            subset: v1
+            port:
+              number: 5000
+          weight: 90
+        - destination:
+            host: model-service
+            subset: v2
+            port:
+              number: 5000
+          weight: 10
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: model-service
+  name: model-service-dr
 spec:
   host: model-service
   subsets:
-  - name: v1
-    labels:
-      version: v1
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -175,3 +269,38 @@ spec:
       services:
         - name: app
           port: 5000
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: model-service-vs
+spec:
+  hosts: 
+    - model-service
+  http:
+    - match:
+        - sourceLabels: 
+            version: v2
+      route:
+        - destination: 
+            host: model-service 
+            subset: v2
+    - route: # default route
+        - destination: 
+            host: model-service 
+            subset: v1
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: app-dr
+spec:
+  host: app
+  subsets:
+    - name: v1
+      labels: 
+        version: v1
+    - name: v2
+      labels: 
+        version: v2
+

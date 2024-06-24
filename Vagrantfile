@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
     controller.vm.hostname = HOSTNAME
     controller.vm.provider "virtualbox" do |vb|
       vb.cpus = 1
-      vb.memory = 6144
+      vb.memory = 4092
     end
     controller.vm.provision "ansible" do |ansible|
       ansible.compatibility_mode = "2.0"
