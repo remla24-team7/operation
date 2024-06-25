@@ -88,7 +88,10 @@ To open the Kiali dashboard navigate to: https://192.168.56.110:30040
 
 Wait until the `app` pod in the default namespace is up and healthy and the navigate to 'Traffic Graph' in the Kiali Dashboard. In a separate tab, open http://app.remla.local (assuming you added this to your `/etc/hosts`). Now refresh the page a couple of times and go back to the Kiali Dashboard. You should see some https traffic coming into the `app` pod via the `istio-ingressgateway` which should look something like this:
 
-![istio_traffic](./images/Istio_traffic.png)
+![istio_traffic](./images/istio_traffic_management.png)
+
+#### Traffic management
+The above image shows how we implemented a second deployment of the `app` and `model-service` and added a 90/10 routing for the `app` service. A *VirtualService* is defined to match HTTP requests that come from services with a `version: v1` label and reroute these to the `v1` subset.
 
 ### 2. Running instructions for Minikube
 ```
