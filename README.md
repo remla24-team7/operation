@@ -82,7 +82,7 @@ Kiali has already been provisioned through the Ansible playbook, to apply Promet
     kubectl apply -f {istio install}/samples/addons/jaeger.yaml
     kubectl apply -f kubernetes/launch.yml
 
-You might need to restart `vagrant up` if your VMs lose connection. In that case, delete and reapply `kubernetes/monitoring/expose-dashboards.yml` and `kubernetes/launch.yml`
+The virtual machines have a tendency to crash, so you might need to restart `vagrant up` if your VMs lose connection. In that case, delete and reapply `kubernetes/monitoring/expose-dashboards.yml` and `kubernetes/launch.yml`
 
 To open the Kiali dashboard navigate to: https://192.168.56.110:30040
 
@@ -91,7 +91,7 @@ Wait until the `app` pod in the default namespace is up and healthy and the navi
 ![istio_traffic](./images/istio_traffic_management.png)
 
 #### Traffic management
-The above image shows how we implemented a second deployment of the `app` and `model-service` and added a 90/10 routing for the `app` service. A *VirtualService* is defined to match HTTP requests that come from services with a `version: v1` label and reroute these to the `v1` subset.
+The above image shows how we implemented a second deployment of the `app` and `model-service` and added a 90/10 routing for the `app` service. A *VirtualService* is defined to match HTTP requests that come from services with a `version: v1` label and reroute these to the `v1` subset. If you find that both versions of the `model-service` pods are not starting up, it might be that the node on which they are deployed is *NotReady*. In that case restart the VMs by doing `vagrant up` and check again.
 
 ### 2. Running instructions for Minikube
 ```
