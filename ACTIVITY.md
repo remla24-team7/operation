@@ -75,7 +75,7 @@ Approved PR: https://github.com/remla24-team7/model-training/pull/10
 
 # A5:
 -- Melle: --
-Created PR: No PR created, however spent time trying to fix kubernetes deployment and traffic management, no success yet.
+Created PR: https://github.com/remla24-team7/operation/pull/11
 Approved PR: https://github.com/remla24-team7/model-service/pull/4
 
 -- Kevin --
@@ -93,7 +93,7 @@ Approved PR:
 
 # A6 (Inlcudes missing pr's from last week):
 --Melle: --
-Created PR: https://github.com/remla24-team7/operation/pull/11
+Created PR: https://github.com/remla24-team7/model-training/pull/13
 Merged PR: https://github.com/remla24-team7/model-training/pull/11
 
 -- Kevin --
