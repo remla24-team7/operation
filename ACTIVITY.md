@@ -91,7 +91,7 @@ Created PR: https://github.com/remla24-team7/operation/pull/10
 Approved PR: 
 
 
-# A6:
+# A6 (Inlcudes missing pr's from last week):
 --Melle: --
 Created PR: https://github.com/remla24-team7/operation/pull/11
 Merged PR: https://github.com/remla24-team7/model-training/pull/11
@@ -106,4 +106,18 @@ Approved PR: https://github.com/remla24-team7/operation/pull/11
 
 -- Alex --
 Created PR: https://github.com/remla24-team7/model-training/pull/11
-Approved PR: 
+Approved PR: https://github.com/remla24-team7/operation/pull/12
+
+Wroked on the report on overleaf, task split was as follows: 
+
+Release Pipeline: Alex, Melle 
+Deployment: Arjun, Kevin 
+Traffic management: Kevin 
+Additional Istio usecase: Melle 
+Experimental Setup: Arjun 
+ML pipeline: Alex 
+ML code quality: Arjun 
+ML testing: Melle 
+Testing results: Arjun 
+Limitations: All of us
+
