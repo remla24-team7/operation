@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: model-service
-          image: ghcr.io/remla24-team7/model-service:0.1.1
+          image: ghcr.io/remla24-team7/model-service:0.1.2
           ports:
             - containerPort: 5000
           volumeMounts:

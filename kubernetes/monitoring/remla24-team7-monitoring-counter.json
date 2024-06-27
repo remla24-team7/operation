@@ -1,0 +1,103 @@
+{
+  "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+  },
+  "fieldConfig": {
+    "defaults": {
+      "mappings": [],
+      "thresholds": {
+        "mode": "absolute",
+        "steps": [
+          {
+            "color": "green",
+            "value": null
+          },
+          {
+            "color": "red",
+            "value": 80
+          }
+        ]
+      },
+      "color": {
+        "mode": "thresholds"
+      }
+    },
+    "overrides": []
+  },
+  "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 0,
+    "y": 0
+  },
+  "id": 1,
+  "options": {
+    "reduceOptions": {
+      "values": false,
+      "calcs": [
+        "lastNotNull"
+      ],
+      "fields": ""
+    },
+    "orientation": "auto",
+    "displayMode": "gradient",
+    "valueMode": "color",
+    "namePlacement": "auto",
+    "showUnfilled": true,
+    "sizing": "auto",
+    "minVizWidth": 8,
+    "minVizHeight": 16,
+    "maxVizHeight": 300
+  },
+  "pluginVersion": "11.0.0",
+  "targets": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "disableTextWrap": false,
+      "editorMode": "builder",
+      "expr": "app1_agree_counter_total",
+      "fullMetaSearch": false,
+      "hide": false,
+      "includeNullMetadata": true,
+      "instant": false,
+      "legendFormat": "__auto",
+      "range": true,
+      "refId": "B",
+      "useBackend": false
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "expr": "",
+      "hide": false,
+      "instant": false,
+      "range": true,
+      "refId": "C"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "disableTextWrap": false,
+      "editorMode": "builder",
+      "expr": "app1_disagree_counter_total",
+      "fullMetaSearch": false,
+      "hide": false,
+      "includeNullMetadata": true,
+      "instant": false,
+      "legendFormat": "__auto",
+      "range": true,
+      "refId": "D",
+      "useBackend": false
+    }
+  ],
+  "title": "App - Agree/Disagree Gauge",
+  "type": "bargauge"
+}
