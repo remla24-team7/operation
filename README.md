@@ -24,6 +24,7 @@ A version-aware library that can be queried for the library's version.
 This project uses Vagrant to provision virtual machines and Kubernetes to manage containerized deployments. This installation guide works for Linux.
 
 ### Prerequisites
+To run the deployment the following prerequisites are set:
 
 - Ansible installed (https://www.ansible.com/)
 ```bash
@@ -85,29 +86,29 @@ Make sure the model folder (`model/model.keras`, `model/tokenizer.joblib`, `mode
 
 This should deploy three pods distributed on the controller, node1 and node2. Open the Prometheus dashboard and move on to Status >> Targets to find the metrics endpoint. 
 
-To add the dashboard, navigate to the Grafana dashboard at http://192.168.56.110:30020. 
+- To add the dashboard, navigate to the Grafana dashboard at http://192.168.56.110:30020. 
 
-The login credentials are:
+    The login credentials are:
 
-login: *admin*
+    login: *admin*
 
-password: *prom-operator*
+    password: *prom-operator*
 
-Now add Prometheus as a data source (Configuration > Data sources), the URL for Prometheus is http://192.168.56.110:30010
+- Now add Prometheus as a data source (Configuration > Data sources), the URL for Prometheus is http://192.168.56.110:30010
 
-Import our dashboards by clicking on Dashboards > New > New Dashboard > Import a dashboard
+- Import our dashboards by clicking on Dashboards > New > New Dashboard > Import a dashboard
 
-Our dashboards containing the gauge, counter and histogram metric are located here: [Gauge dashboard](./kubernetes/monitoring/remla24-team7-monitoring-counter.json), [Counter dashboard](./kubernetes/monitoring/remla24-team7-monitoring-counter.json), [Histogram dashboard](./kubernetes/monitoring/remla24-team7-monitoring-histogram.json).
+- Our dashboards containing the gauge, counter and histogram metric are located here: [Gauge dashboard](./kubernetes/monitoring/remla24-team7-monitoring-gauge.json), [Counter dashboard](./kubernetes/monitoring/remla24-team7-monitoring-counter.json), [Histogram dashboard](./kubernetes/monitoring/remla24-team7-monitoring-histogram.json).
 
-Copy the JSON file for each dashboard separately and paste them into the text box. Finally, click on load to import the dashboard. 
+- Copy the JSON file for each dashboard separately and paste them into the text box. Finally, click on load to import the dashboard. 
 
-If everything worked correctly, you should see something like this:
+If everything worked correctly, the dashboard should be visible in Grafana:
 
 ![Grafana_gauge](./images/Grafana_gauge.png)
 
 
 ## Istio Service Mesh
-The Istio service mesh can be applied through the K3S cluster, or through Minikube. Instructions are provided for both methods.
+The Istio service mesh can be applied through the K3s cluster, or through Minikube. Instructions are provided here are provided for K3s. To apply Istio through Minikube, please find the instructions for weekly assignments by opening the drop down bar and checking out [Running instructions for minikube](#2-running-instructions-for-minikube).
 ### 1. Running instructions for K3S
 
 Kiali has already been provisioned through the Ansible playbook, to apply Prometheus and Jaeger for Kiali: please navigate to your local Istio installation and run the following commands:
