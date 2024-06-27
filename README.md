@@ -87,24 +87,62 @@ This should deploy three pods distributed on the controller, node1 and node2. Op
 
 To add the dashboard, navigate to the Grafana dashboard at http://192.168.56.110:30020. 
 
-To obtain the password for the Grafana dashboard run the following command:
-
-    kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-
 The login credentials are:
 
-login: admin
+login: *admin*
 
-password: *generated from command above*
-
-If this password does not work, try password: *prom-operator*
+password: *prom-operator*
 
 Now add Prometheus as a data source (Configuration > Data sources), the URL for Prometheus is http://192.168.56.110:30010
 
-And add the JSON dashboard located in `kubernetes/monitoring/remla24-team7-dashboard.json`
+Import our dashboards by clicking on Dashboards > New > New Dashboard > Import a dashboard
 
+Our dashboards containing the gauge, counter and histogram metric are located here: [Gauge dashboard](./kubernetes/monitoring/remla24-team7-monitoring-counter.json), [Counter dashboard](./kubernetes/monitoring/remla24-team7-monitoring-counter.json), [Histogram dashboard](./kubernetes/monitoring/remla24-team7-monitoring-histogram.json).
+
+Copy the JSON file for each dashboard separately and paste them into the text box. Finally, click on load to import the dashboard. 
+
+If everything worked correctly, you should see something like this:
+
+![Grafana_gauge](./images/Grafana_gauge.png)
+
+
+## Istio Service Mesh
+The Istio service mesh can be applied through the K3S cluster, or through Minikube. Instructions are provided for both methods.
+### 1. Running instructions for K3S
+
+Kiali has already been provisioned through the Ansible playbook, to apply Prometheus and Jaeger for Kiali: please navigate to your local Istio installation and run the following commands:
+
+    kubectl label ns default istio-injection=enabled
+    kubectl apply -f {istio install}/samples/addons/prometheus.yaml
+    kubectl apply -f {istio install}/samples/addons/jaeger.yaml
+    kubectl apply -f kubernetes/launch.yml
+
+The virtual machines have a tendency to crash, so you might need to restart `vagrant up` if your VMs lose connection. In that case, delete and reapply `kubernetes/monitoring/expose-dashboards.yml` and `kubernetes/launch.yml`
+
+To open the Kiali dashboard navigate to: https://192.168.56.110:30040
+
+Wait until the `app` pod in the default namespace is up and healthy and the navigate to 'Traffic Graph' in the Kiali Dashboard. In a separate tab, open http://app.remla.local (assuming you added this to your `/etc/hosts`). Now refresh the page a couple of times and go back to the Kiali Dashboard. You should see some https traffic coming into the `app` pod via the `istio-ingressgateway` which should look something like this:
+
+![istio_traffic](./images/istio_traffic_management.png)
+
+#### Traffic management
+The above image shows how we implemented a second deployment of the `app` and `model-service` and added a 90/10 routing for the `app` service. A *VirtualService* is defined to match HTTP requests that come from services with a `version: v1` label and reroute these to the `v1` subset. If you find that both versions of the `model-service` pods are not starting up, it might be that the node on which they are deployed is *NotReady*. In that case restart the VMs by doing `vagrant up` and check again.
+
+## Rate limiting in Istio
+
+Istio provides a neat way to enable rate limiting using Envoy and its EnvoyFilter resource. We have defined a local rate limit that limits http traffic to the `app`. The local rate limit's filter [token bucket](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/local_ratelimit/v3/local_rate_limit.proto#envoy-v3-api-field-extensions-filters-http-local-ratelimit-v3-localratelimit-token-bucket) is set to 20 requests, and is refilled with 10 requests every 30 seconds. To apply the local rate limiter:
+
+    kubectl apply -f kubernetes/ratelimit.yml
+
+To verify this, open http://app.remla.local and refresh the page 21 times. After the 21st time you should be blocked from accessing the app and see the message: **local_rate_limited**
+
+![istio_rate_limited](./images/Istio_rate_limited.png)
 
 ---
+## Instructions for weekly assignments
+
+<details>
+<summary> This contains the same instructions as above, but separated for each weekly assignment.</summary>
 
 ## A2: Launch application with docker compose
 
@@ -227,3 +265,5 @@ Istio provides a neat way to enable rate limiting using Envoy and its EnvoyFilte
 To verify this, open http://app.remla.local and refresh the page 21 times. After the 21st time you should be blocked from accessing the app and see the message: **local_rate_limited**
 
 ![istio_rate_limited](./images/Istio_rate_limited.png)
+
+</details>
