@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
     controller.vm.hostname = HOSTNAME
     controller.vm.provider "virtualbox" do |vb|
       vb.cpus = 1
-      vb.memory = 4096
+      vb.memory = 4092
     end
     controller.vm.provision "ansible" do |ansible|
       ansible.compatibility_mode = "2.0"
@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
       node.vm.network :forwarded_port, guest: 22, host: 2200 + id, host_ip: "0.0.0.0", id: "ssh"
       node.vm.hostname = HOSTNAME
       node.vm.provider "virtualbox" do |vb|
-        vb.cpus = 2
+        vb.cpus = 4
         vb.memory = 6144
       end
       node.vm.provision "ansible" do |ansible|

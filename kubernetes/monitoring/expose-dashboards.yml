@@ -38,3 +38,18 @@ spec:
       nodePort: 30030
   selector:
     app.kubernetes.io/instance: kubernetes-dashboard
+    
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expose-kiali
+  namespace: istio-system
+spec:
+  type: NodePort
+  ports:
+    - port: 20001
+      targetPort: 20001
+      nodePort: 30040
+  selector:
+    app.kubernetes.io/name: kiali
